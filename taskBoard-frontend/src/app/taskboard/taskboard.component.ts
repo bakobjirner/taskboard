@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Task } from '../models/Task';
-import {CdkDragDrop, moveItemInArray, transferArrayItem} from "@angular/cdk/drag-drop";
-
+import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
+import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
 @Component({
   selector: 'app-taskboard',
   templateUrl: './taskboard.component.html',
@@ -9,33 +9,25 @@ import {CdkDragDrop, moveItemInArray, transferArrayItem} from "@angular/cdk/drag
 })
 export class TaskboardComponent implements OnInit {
 
-
+  public todo: Task[] = [];
+  public done: Task[] = [];
   public inProgress: Task[] = [];
-
   public discarded: Task[] = [];
+  public addTaskFormGroup: FormGroup;
 
-  constructor() { }
+  constructor() {
+    this.addTaskFormGroup = new FormGroup({
+      text: new FormControl('')
+    });
+  }
+
+
 
   ngOnInit(): void {
 
   }
 
-  todo = [
-    'Get to work',
-    'Pick up groceries',
-    'Go home',
-    'Fall asleep'
-  ];
-
-  done = [
-    'Get up',
-    'Brush teeth',
-    'Take a shower',
-    'Check e-mail',
-    'Walk dog'
-  ];
-
-  drop(event: CdkDragDrop<string[]>): void {
+  drop(event: CdkDragDrop<Task[]>): void {
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
     } else {
@@ -43,6 +35,14 @@ export class TaskboardComponent implements OnInit {
         event.container.data,
         event.previousIndex,
         event.currentIndex);
+    }
+    console.log(this.done);
+  }
+
+  addTask(): void{
+    if (this.addTaskFormGroup.get('text')?.value){
+      this.todo.push(new Task(this.addTaskFormGroup.get('text')?.value));
+      this.addTaskFormGroup.get('text')?.setValue('');
     }
   }
 
